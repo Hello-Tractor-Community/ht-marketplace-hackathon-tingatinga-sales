@@ -35,11 +35,10 @@ Please organize and complete the following deliverables within this repository:
 
 ### 2. **Demo Video**
 - Upload your video to YouTube, Vimeo, or as an mp4 file.
-- **Link to Demo Video**: [Insert your video link here]
-
+- **Link to Demo Video**: https://youtu.be/s0Z_drO2V8s
 ### 3. **Live Application URL**
 - Deploy your application to a platform like Vercel, Netlify, or AWS.
-- **Link to Live App**: [Insert live application URL here]
+- **Link to Live App**: https://tingatinga-sales.vercel.app
 
 ### 4. **Technical Documentation**
 - Include setup instructions for running the project locally.

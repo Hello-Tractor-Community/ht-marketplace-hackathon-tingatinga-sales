@@ -17,7 +17,7 @@
 - 🔍 Advanced search and filtering
 - 💬 In-platform messaging
 - ⭐ Reviews and ratings system
-- �Admin management dashboard
+
 
 ## Challenges
 - **Challenge 1:** Limited Time
