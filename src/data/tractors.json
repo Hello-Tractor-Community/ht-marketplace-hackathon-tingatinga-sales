@@ -1,0 +1,45 @@
+{
+    "tractor_models": [
+      {
+        "model": "John Deere",
+        "makes": ["5E Series", "6M Series", "7R Series", "8RX Series", "X9 Combines"]
+      },
+      {
+        "model": "Massey Ferguson",
+        "makes": ["1700E Series", "2600H Series", "5700 Series", "7700S Series"]
+      },
+      {
+        "model": "New Holland",
+        "makes": ["Workmaster Series", "PowerStar Series", "T7 Heavy Duty", "CR Revelation Combines"]
+      },
+      {
+        "model": "Kubota",
+        "makes": ["B Series", "L Series", "M Series", "BX Series", "T90 Series"]
+      },
+      {
+        "model": "Mahindra",
+        "makes": ["Max Series", "eMax Series", "6000 Series", "7000 Series"]
+      },
+      {
+        "model": "Case IH",
+        "makes": ["Farmall Series", "Maxxum Series", "Puma Series", "Steiger Series"]
+      },
+      {
+        "model": "Claas",
+        "makes": ["AXION Series", "ARION Series", "XERION Series", "LEXION Combines"]
+      },
+      {
+        "model": "Fendt",
+        "makes": ["200 Vario", "700 Vario", "900 Vario MT", "Ideal Combines"]
+      },
+      {
+        "model": "Valtra",
+        "makes": ["A Series", "N Series", "T Series", "G Series"]
+      },
+      {
+        "model": "Deutz-Fahr",
+        "makes": ["6G Series", "7 Series", "Agrotron Series", "C9000 Combine"]
+      }
+    ]
+  }
+  

@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                 String   @id @default(cuid())
+  categoryId         String // Foreign key to Category model
+  name               String // Name of the product
+  description        String // Description of the product
+  content            String // Rich text description
+  images             String[] // Array of image URLs
+  currency           String // Currency
+  price              Float // Price of the product
+  stockQuantity      Int // Available stock quantity
+  availabilityStatus String
+  sellerId String // Foreign key linking the product to the seller
+
+  // Relationships
+  seller    SellerProfile @relation(fields: [sellerId], references: [id])
+  category  Category      @relation(fields: [categoryId], references: [id]) // Product belongs to a category
+  createdAt DateTime      @default(now()) // When the product was created
+  updatedAt DateTime      @updatedAt // When the product was last updated
+
+  // Optional: Tractor-specific details
+  tractor Tractor? @relation // One-to-one relation with Tractor model
+  reviews Review[]
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String // Name of the category (e.g., "Tractors", "Tools", etc.)
+  description String? // Optional description of the category
+  verified    Boolean @default(false) // Verified by admin
+
+  // Relationship to products (a category can have many products)
+  products Product[] // Array of products belonging to this category
+}
+
+model Tractor {
+  id                    String   @id @default(cuid())
+  productId             String   @unique // Foreign key linking to the Product model
+  engineTypeId          String // Foreign key linking to EngineType model
+  horsePower            Int
+  fuelCapacity          Float
+  maxSpeed              Float
+  transmissionType      String
+  wheelType             String
+  operatingWeight       Float?
+  serialNumber          String   @unique
+  attachmentsCompatible String[]
+  warranty              String?
+  make      String
+  model     String
+  year      Int
+  condition String
+  hoursUsed Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product    Product    @relation(fields: [productId], references: [id]) // Backlink to Product
+  engineType EngineType @relation(fields: [engineTypeId], references: [id]) // Backlink to EngineType
+  reviews    Review[]
+}
+
+model EngineType {
+  id          String  @id @default(cuid())
+  name        String // Name of the engine type (e.g., "Diesel", "Electric", "Hybrid")
+  description String? // Optional description of the engine type
+  verified    Boolean @default(false) // Verified by admin
+
+  // Relationship to Tractors (an engine type can be used by many tractors)
+  tractors Tractor[] // Array of tractors that use this engine type
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Float // Rating given to the product (e.g., 1 to 5 stars)
+  comment   String? // Optional comment about the product
+  createdAt DateTime @default(now()) // When the review was created
+  updatedAt DateTime @updatedAt // When the review was last updated
+
+  userId    String // The user who created the review
+  productId String? // The product being reviewed
+  tractorId String?
+
+  // Relations
+  user            User           @relation(fields: [userId], references: [id])
+  product         Product?       @relation(fields: [productId], references: [id])
+  tractor         Tractor?       @relation(fields: [tractorId], references: [id])
+  SellerProfile   SellerProfile? @relation(fields: [sellerProfileId], references: [id])
+  sellerProfileId String?
+
+  @@index([productId])
+}
+
+model SellerProfile {
+  id           String  @id @default(cuid()) // Unique ID for the seller profile
+  userId       String  @unique // Foreign key linking to the User model
+  businessName String  @unique // The name of the seller's business
+  description  String? // Optional: A short description about the seller or store
+
+  address                String? // Optional: Store's physical address
+  country                String? // Optional: Country where the business is located
+  region                 String? // Optional: State/Province/Region of the business
+  city                   String? // Optional: City where the business operates
+  postalCode             String? // Optional: Postal code for shipping or correspondence
+  phoneNumber            String // Store's contact number
+  email                  String // Seller's email address
+  website                String? // Optional: Seller's website link
+  socialLinks            String[] // Optional: Array of social media profile links
+  preferredContactMethod String? // Optional: Preferred contact method (e.g., Email, Phone, WhatsApp)
+
+  bannerImageUrl String? // Optional: Banner image URL for the store page
+  tagline        String? // Optional: Tagline or slogan for the store
+
+  averageRating Float? // Optional: Average rating based on reviews
+  totalReviews  Int    @default(0) // Total number of reviews received
+
+  shippingPolicy String? // Optional: Shipping policy details
+  returnPolicy   String? // Optional: Return/Refund policy
+
+  isVerified       Boolean @default(false) // Whether the seller has completed KYC verification
+  complianceStatus String? // Optional: Compliance status indicating platform rules
+  adminRemarks     String? // Optional: Admin's internal remarks about the seller
+
+  user     User      @relation(fields: [userId], references: [id]) // Backlink to the User model
+  products Product[] // Array of products listed by the seller
+
+  reviews   Review[] // Array of reviews for the seller
+  createdAt DateTime @default(now()) // When the seller profile was created
+  updatedAt DateTime @updatedAt // When the seller profile was last updated
+}
+
+model User {
+  id            String    @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String?   @unique
+  emailVerified DateTime?
+  phoneNumber   String    @unique
+  password      String // User's password (hashed)
+  image         String?
+  country String?
+  address String?
+  zipCode String?
+
+  isAdmin  Boolean @default(false)
+  isSeller Boolean @default(false)
+
+  accounts       Account[]
+  sessions       Session[]
+  authenticators Authenticator[] // Optional for WebAuthn support
+
+  sellerProfile    SellerProfile?
+  reviews          Review[]
+  sentMessages     Message[]      @relation("SentMessages")
+  receivedMessages Message[]      @relation("ReceivedMessages")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  senderId   String
+  receiverId String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  seen       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refreshToken      String?
+  accessToken       String?
+  expiresAt         Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?
+  sessionState      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialId         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialId])
+}
